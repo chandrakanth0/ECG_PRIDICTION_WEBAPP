@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ECG Heart Disease Predictor</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <h1>ECG-based Heart Disease Prediction</h1>
+  <p>This application uses deep learning (VGG19) to predict the likelihood of heart disease from ECG signal images.</p>
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" name="file" id="fileInput" />
+    <button type="button" onclick="uploadImage()">Predict</button>
+  </form>
+  <p id="result"></p>
+  <script src="/static/js/script.js"></script>
+</body>
+</html>
