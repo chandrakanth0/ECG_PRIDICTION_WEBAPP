@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ECG Prediction Result</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f9f9f9; }
+        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        ul { list-style: none; padding: 0; }
+        li { margin-bottom: 10px; font-size: 18px; }
+        .highlight { font-size: 22px; color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Prediction Result</h1>
+        <p class="highlight">Predicted Class: {{ predicted_label }}</p>
+        <h2>Class Probabilities:</h2>
+        <ul>
+            {% for label, prob in probabilities.items() %}
+            <li>{{ label }}: {{ prob }}%</li>
+            {% endfor %}
+        </ul>
+        <a href="/">&#8592; Predict Another</a>
+    </div>
+</body>
+</html>
