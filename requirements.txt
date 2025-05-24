@@ -1,5 +1,7 @@
-Flask==2.2.3
 tensorflow==2.12.0
 numpy==1.23.5
 Pillow==9.5.0
 gunicorn
+Flask==2.3.3
+Werkzeug==2.3.7
+gunicorn==21.2.0
