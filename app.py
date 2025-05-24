@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 
 # Load your model
-model = tf.keras.models.load_model("your_model.keras")
+model = tf.keras.models.load_model("Vgg16_ecg_model.keras")
 
 @app.route('/')
 def index():
