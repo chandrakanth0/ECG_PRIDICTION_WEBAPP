@@ -6,7 +6,7 @@ A modern web application leveraging deep learning (VGG16) to analyze Electrocard
 
 ## Project Structure
 
-
+```
 
 ecg-heart-predictor/
 ├── app.py                  # Main Flask backend server
@@ -22,7 +22,7 @@ ecg-heart-predictor/
 │   └── index.html  and result.html        # HTML template rendered by Flask
 └── README.md               # Project documentation (this file)
 
-
+```
 
 ---
 
@@ -144,5 +144,3 @@ Email: [chandrakanthchandru0799@gmail.com](mailto:chandrakanthchandru0799@gmail.
 GitHub: [https://github.com/chandrakanth0](https://github.com/chandrakanth0)
 
 ```
-
----
