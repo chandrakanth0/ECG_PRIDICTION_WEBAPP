@@ -1,20 +1,405 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ECG Heart Disease Predictor</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI-Powered ECG Analysis for Heart Health</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Color Palette Definition --- */
+        :root {
+            --primary-color: #00c37b; /* Your vibrant, signature green/cyan */
+            --primary-darker: #00cc7a; /* A darker shade for hover states */
+            --primary-light-bg: #e0f2f1; /* A very subtle, light green for backgrounds like input fields */
+
+            --secondary-color: #6c757d; /* Muted grey for general text */
+            --accent-color: #81c784; /* Soft, calming green for success messages */
+            --bg-light: #f8f9fa; /* Very light background for the page */
+            --text-dark: #343a40; /* Darker text for main content and labels */
+            --border-light: #e9ecef; /* Light grey for subtle borders */
+            --form-bg: #ffffff; /* Pure white for the form's background */
+        }
+
+        /* --- Global / Body Styles --- */
+        body {
+            font-family: 'Roboto', sans-serif; /* Professional and clean font */
+            max-width: 960px; /* Wider layout for content */
+            margin: 40px auto;
+            padding: 30px;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* Stronger, softer shadow for depth */
+            line-height: 1.8;
+            box-sizing: border-box; /* Ensures padding and border are included in element's total width/height */
+        }
+
+        /* --- Typography --- */
+        h1, h2 {
+            color: var(--primary-color); /* Headings use the vibrant primary color */
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 700; /* Bolder headings for emphasis */
+        }
+        h1 {
+            font-size: 2.8em; /* Larger main title for prominence */
+            margin-bottom: 25px;
+            letter-spacing: -0.5px;
+        }
+        h2 {
+            font-size: 2em;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color); /* Professional primary color border */
+            margin-bottom: 25px;
+            color: var(--text-dark); /* Secondary headings remain dark for excellent contrast */
+        }
+        p, li {
+            color: var(--secondary-color); /* Muted grey for readability */
+            font-size: 1.1rem; /* Slightly larger text for improved readability */
+            line-height: 1.7;
+        }
+        .disclaimer {
+            font-size: 0.85rem;
+            color: #888; /* A slightly darker grey for disclaimer text */
+            margin-top: 20px;
+        }
+
+        /* --- Navigation Bar Styles --- */
+        nav {
+            background-color: var(--primary-color);
+            padding: 15px 0;
+            text-align: center;
+            border-radius: 8px;
+            margin-top: 20px; /* Added margin to separate from the main title text */
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 195, 123, 0.3);
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            gap: 30px; /* Space out navigation items */
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        nav ul li a:hover {
+            background-color: var(--primary-darker);
+            transform: translateY(-2px);
+        }
+
+        /* --- Form Styles --- */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px; /* Increased spacing between form elements */
+            margin-bottom: 60px; /* More space before the next section */
+            padding: 30px;
+            background: var(--form-bg); /* Pure white background for the form */
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05); /* Soft shadow for the form */
+            border: 1px solid var(--border-light); /* Light border around the form */
+        }
+        label {
+            font-weight: 600;
+            color: var(--text-dark); /* Dark text for label for clear visibility */
+            font-size: 1.15rem;
+        }
+        input[type="file"] {
+            padding: 15px; /* Larger padding for a more touch-friendly area */
+            border: 2px dashed var(--primary-color); /* Vibrant green dashed border */
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 400px; /* Wider input for easier file selection */
+            background-color: var(--primary-light-bg); /* Very light green tint for input */
+            transition: border-color 0.3s ease, background-color 0.3s ease; /* Smooth transitions */
+            font-size: 1.05rem;
+            text-align: center; /* Center the "No file chosen" text */
+        }
+        input[type="file"]:hover {
+            border-color: var(--primary-darker); /* Darker green on hover */
+            background-color: #d1efe8; /* Slightly darker light green for hover effect */
+        }
+        button {
+            background-color: var(--primary-color); /* Vibrant green button */
+            color: white;
+            border: none;
+            padding: 16px 40px; /* Larger, more prominent button */
+            font-size: 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover and press effects */
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 255, 162, 0.2); /* Shadow matching the primary color */
+        }
+        button:hover {
+            background-color: var(--primary-darker); /* Darker green on hover */
+            transform: translateY(-3px); /* More pronounced lift effect */
+        }
+
+        /* --- Prediction Result --- */
+        .result {
+            margin-top: 40px;
+            padding: 35px; /* Significantly larger padding for emphasis */
+            border-radius: 12px;
+            background-color: var(--accent-color); /* Calming green for success */
+            color: white;
+            font-weight: 700;
+            font-size: 1.8rem; /* Much larger font size for prominence */
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(129, 199, 132, 0.6); /* Stronger, softer shadow */
+            animation: fadeInScale 1s ease-out; /* Enhanced animation for result display */
+            display: flex; /* Use flexbox for centering content */
+            justify-content: center;
+            align-items: center;
+            min-height: 120px; /* Ensure a minimum height for visual presence */
+        }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9) translateY(30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* --- Loading Spinner --- */
+        .loading {
+            display: none; /* Hidden by default, shown by JavaScript */
+            margin-top: 40px;
+            border: 8px solid #f3f3f3; /* Light grey background for spinner */
+            border-top: 8px solid var(--primary-color); /* Vibrant green spinner top */
+            border-radius: 50%;
+            width: 60px; /* Larger spinner */
+            height: 60px;
+            animation: spin 1s linear infinite; /* Rotation animation */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- Section Styling --- */
+        section {
+            background: var(--form-bg); /* White background for information sections */
+            padding: 35px;
+            margin-bottom: 45px;
+            border-radius: 10px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.06); /* Soft shadow for sections */
+            border: 1px solid var(--border-light); /* Light border around sections */
+        }
+        ul {
+            list-style: disc inside; /* Bullet points for lists */
+            padding-left: 0;
+        }
+        ul li {
+            margin-bottom: 10px; /* Spacing between list items */
+        }
+
+        /* --- Footer Styles --- */
+        footer {
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--secondary-color); /* Muted grey for footer text */
+            margin-top: 70px;
+            border-top: 1px solid var(--border-light); /* Light border at the top of the footer */
+            padding-top: 25px;
+        }
+        footer a {
+            color: var(--primary-color); /* Vibrant green for footer links */
+            text-decoration: none;
+            transition: color 0.3s ease; /* Smooth color transition on hover */
+        }
+        footer a:hover {
+            color: var(--primary-darker); /* Darker green on hover */
+            text-decoration: underline;
+        }
+
+        /* --- Accessibility (sr-only) --- */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* --- Media Queries for Responsiveness --- */
+        @media (max-width: 768px) {
+            body {
+                margin: 20px auto;
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2.2em;
+            }
+            h2 {
+                font-size: 1.6em;
+            }
+            form {
+                padding: 20px;
+            }
+            button {
+                padding: 14px 30px;
+                font-size: 1.1rem;
+            }
+            .result {
+                font-size: 1.5rem;
+                padding: 25px;
+                min-height: 100px;
+            }
+            .loading {
+                width: 50px;
+                height: 50px;
+            }
+            section {
+                padding: 25px;
+            }
+            nav ul {
+                flex-direction: column; /* Stack navigation items on small screens */
+                gap: 15px;
+            }
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            h2 {
+                font-size: 1.4em;
+            }
+            input[type="file"] {
+                max-width: 100%;
+            }
+            .result {
+                font-size: 1.3rem;
+                padding: 20px;
+            }
+        }
+    </style>
+    <script>
+        function showLoading() {
+            document.getElementById('loading-spinner').style.display = 'block';
+            document.getElementById('prediction-form').style.display = 'none'; // Hide form while loading
+            const resultDiv = document.getElementById('prediction-result');
+            resultDiv.innerHTML = ''; // Clear previous result
+            resultDiv.style.display = 'none'; // Hide result
+        }
+
+        // This function would be called by your Flask app after a successful prediction
+        // For demonstration, you could call it with a dummy string:
+        // showResult("No Heart Disease Detected!");
+        function showResult(predictionText) {
+            document.getElementById('loading-spinner').style.display = 'none';
+            document.getElementById('prediction-form').style.display = 'flex'; // Show form again
+            const resultDiv = document.getElementById('prediction-result');
+            resultDiv.innerHTML = `<strong>Prediction Result:</strong> <br>${predictionText}`;
+            resultDiv.style.display = 'flex'; // Make sure it's flex for centering
+        }
+    </script>
 </head>
 <body>
-    <h1>ECG-based Heart Disease Prediction</h1>
-    <p>Upload your ECG image below to check for signs of heart disease.</p>
-    
-    <form action="/predict" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" required>
-        <button type="submit">Predict</button>
-    </form>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#ANA">Analyze ECG</a></li>
+                <li><a href="#about">About This App</a></li>
+                <li><a href="#mi-info">What is MI?</a></li>
+                <li><a href="#ecg-explanation">ECG Explained</a></li>
+                <li><a href="#history-mi">Risk Factors</a></li>
+            </ul>
+        </nav>
+      <h1 id="ANA">AI-Powered ECG Analysis for Heart Health</h1>
+        <p style="text-align: center; font-size: 1.2rem; color: var(--secondary-color); margin-bottom: 40px; font-weight: 300;">
+            Upload your Electrocardiogram (ECG) image to leverage cutting-edge machine learning for <br> early detection of potential cardiac abnormalities.
+        </p>
 
-    {% if prediction %}
-        <h3>Prediction Result: {{ prediction }}</h3>
-    {% endif %}
+
+    </header>
+
+    <main>
+        <form id="prediction-form" action="/predict" method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+            <label for="ecg-file">Select ECG Image for Analysis:</label>
+            <input type="file" id="ecg-file" name="file" accept="image/*" required aria-describedby="file-upload-description" />
+            <span id="file-upload-description" class="sr-only">Upload an image file (e.g., JPEG, PNG) of your Electrocardiogram for analysis.</span>
+            <button type="submit">Predict ECG Class</button>
+        </form>
+
+        <div id="loading-spinner" class="loading" role="status" aria-label="Loading prediction"></div>
+
+        <div id="prediction-result" class="result" style="display: {% if prediction %}flex{% else %}none{% endif %};">
+            {% if prediction %}
+                <strong>Prediction Result:</strong> <br> {{ prediction }}
+            {% endif %}
+        </div>
+
+        <section id="about">
+            <h2>About This Application</h2>
+            <p>This advanced web application employs sophisticated **machine learning algorithms** trained on extensive and diverse datasets of Electrocardiogram (ECG) images. Its primary objective is to serve as a **preliminary assessment tool**, aiding healthcare professionals and individuals in the **early identification** of potential cardiac abnormalities. By facilitating timely detection, we aim to contribute significantly to improved patient outcomes and proactive health management.</p>
+        </section>
+
+        <section id="mi-info">
+            <h2>Understanding Myocardial Infarction (Heart Attack)</h2>
+            <p><strong>Myocardial Infarction (MI)</strong>, commonly known as a heart attack, is a critical medical emergency that occurs when blood flow to a specific section of the heart muscle becomes severely compromised or completely blocked. This interruption of blood supply deprives the heart tissue of essential oxygen and nutrients, leading to damage or death of the affected muscle. Prompt medical attention is vital in such cases.</p>
+            <ul>
+                <li><strong>Common Causes:</strong> The most frequent cause of MI is a blockage in one or more coronary arteries, typically due to the rupture of atherosclerotic plaque buildup.</li>
+                <li><strong>Key Symptoms:</strong> Patients often experience severe chest pain (described as pressure, tightness, squeezing, or fullness), shortness of breath, radiating pain to the arm (especially the left), neck, jaw, or back, as well as lightheadedness, nausea, or cold sweats.</li>
+                <li><strong>Cruciality of Early Intervention:</strong> Immediate diagnosis and intervention are paramount to limit the extent of heart muscle damage, prevent life-threatening complications, and significantly improve the patient's prognosis.</li>
+            </ul>
+        </section>
+
+        <section id="ecg-explanation">
+            <h2>Normal vs. Abnormal ECG Readings</h2>
+            <p>An **Electrocardiogram (ECG or EKG)** is a fundamental and non-invasive diagnostic test that records the electrical activity of the heart. It provides valuable insights into the heart's rhythm and overall function.</p>
+            <ul>
+                <li><strong>Normal ECG:</strong> A healthy ECG tracing typically exhibits a regular heart rhythm, a consistent heart rate within normal ranges, and well-defined wave patterns (P wave, QRS complex, T wave). These patterns reflect the orderly electrical depolarization and repolarization of the heart chambers.</li>
+                <li><strong>Abnormal ECG:</strong> Any deviations from a normal ECG pattern can indicate various underlying cardiac issues. Abnormalities may suggest:
+                    <ul>
+                        <li><strong>Arrhythmias:</strong> Irregular heartbeats, which can be too fast (tachycardia), too slow (bradycardia), or erratic.</li>
+                        <li><strong>Ischemia:</strong> Evidence of reduced blood flow to the heart muscle, often preceding a heart attack.</li>
+                        <li><strong>Myocardial Infarction (MI):</strong> Specific changes on the ECG can confirm a current heart attack or indicate past damage to the heart muscle.</li>
+                        <li>Other structural heart abnormalities or electrolyte imbalances.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section id="history-mi">
+            <h2>History and Key Risk Factors for Myocardial Infarction</h2>
+            <p>Understanding the historical context and identifying modifiable and non-modifiable risk factors are crucial for both the prevention and effective long-term management of Myocardial Infarction.</p>
+            <ul>
+                <li><strong>Personal Medical History:</strong> Individuals with a prior history of heart attacks, angina (chest pain due to reduced blood flow), or other diagnosed cardiovascular diseases face a significantly elevated risk for recurrent cardiac events.</li>
+                <li><strong>Major Risk Factors:</strong>
+                    <ul>
+                        <li>High Blood Pressure (Hypertension)</li>
+                        <li>High Cholesterol (Dyslipidemia)</li>
+                        <li>Diabetes Mellitus</li>
+                        <li>Smoking (including passive exposure)</li>
+                        <li>Obesity (especially abdominal obesity)</li>
+                        <li>Physical Inactivity / Sedentary Lifestyle</li>
+                        <li>Strong Family History of Premature Heart Disease</li>
+                        <li>Chronic Stress</li>
+                    </ul>
+                </li>
+                <li><strong>Prevention and Management:</strong> Proactive measures such as adopting a heart-healthy lifestyle (balanced diet, regular physical activity), maintaining a healthy weight, cessation of smoking, and diligent management of chronic conditions (like hypertension and diabetes) can profoundly reduce the risk of MI. Regular medical check-ups and adherence to prescribed treatments are also indispensable.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 AI Health Solutions. All rights reserved. For support and inquiries, please reach out to <a href="mailto:support@aihealthsolutionsJSSSTU.com">support@aihealthsolutionsJSSSTU.com</a>.</p>
+        <p class="disclaimer"><em>Disclaimer: This application is designed for informational and preliminary assessment purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult with a qualified healthcare provider for any health concerns or before making any decisions related to your medical care.</em></p>
+    </footer>
 </body>
 </html>
